@@ -38,11 +38,3 @@ export function middleware(request: NextRequest) {
   //   return NextResponse.redirect(new URL('/login', request.redirect))
   // }
 }
-export const config = {
-  matcher: [
-    '/',
-    '/login',
-    '/dashboard',
-    '/taskcard'
-  ],
-}
