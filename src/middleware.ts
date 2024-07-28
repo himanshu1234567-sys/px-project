@@ -4,37 +4,28 @@ import type { NextRequest } from 'next/server';
 export function middleware(request: NextRequest) {
   const userToken = request.cookies.get('token')?.value;
   const { pathname } = request.nextUrl;
-  // const path = request.nextUrl.pathname
 
   console.log("🚀 ~ middleware ~ userToken:", userToken);
 
-  // Allow access to login and signup pages without a token
-  if (pathname === '/login' || pathname === '/signup') {
-    if (userToken) {
-      // Redirect authenticated users away from login or signup page to dashboard
-      const dashboardUrl = new URL('/', request.url);
-      return NextResponse.redirect(dashboardUrl);
-    }
-    return NextResponse.next();
-  }
-
-  // Redirect unauthenticated users to login page for protected routes
+  // Redirect unauthenticated users to the login page for all routes except /login and /signup
   if (!userToken) {
-    const loginUrl = new URL('/login', request.url);
-    return NextResponse.redirect(loginUrl);
+    if (pathname !== '/login' && pathname !== '/signup') {
+      const loginUrl = new URL('/login', request.url);
+      return NextResponse.redirect(loginUrl);
+    }
+    return NextResponse.next(); // Allow access to /login and /signup
   }
 
-  // Allow authenticated users to proceed
+  // Redirect authenticated users away from the login or signup page to the home page
+  if (pathname === '/login' || pathname === '/signup') {
+    const homeUrl = new URL('/home', request.url);
+    return NextResponse.redirect(homeUrl);
+  }
+
+  // Allow authenticated users to proceed to other pages
   return NextResponse.next();
-
-  // const isPublishPath = path === '/login' 
-
-
-  // if (isPublishPath && userToken) {
-  //   return NextResponse.redirect(new URL('/', request.nextUrl))
-  // }
-
-  // if (!isPublishPath && userToken) {
-  //   return NextResponse.redirect(new URL('/login', request.redirect))
-  // }
 }
+
+export const config = {
+  matcher: ['/', '/home', '/login', '/signup'],
+};

@@ -1,40 +1,47 @@
 "use client";
-import React, { useState, useEffect } from "react";
-import { v4 as uuidv4 } from "uuid";
-import TaskModal from "@/app/components/TaskModal";
-import TaskCard from "./components/TaskCard";
-import { DragDropContext, Droppable } from "@hello-pangea/dnd";
-import { IoIosAddCircleOutline } from "react-icons/io";
-import LoginForm from "./components/LoginForm";
-import Layout from "@/app/layout"; // Ensure the path is correct
-import {login} from "../actions/actions";
-import axios from "axios";
-import Cookies from 'js-cookie';
-import {redirect} from 'next/navigation'
+import React, { useEffect } from "react";
 import { useRouter } from 'next/navigation';
+import { login } from "../actions/actions";
+import Cookies from 'js-cookie';
 import Link from "next/link";
 
 const Home = () => {
   const router = useRouter();
 
-  const handleLogin = async (username = 'Admin', password="pg@1034") => {
+  useEffect(() => {
+    // Check if the user is already logged in
+    const token = Cookies.get('token');
+    if (!token) {
+      router.push('/login'); // Redirect to login if no token found
+    }
+  }, [router]);
+
+  const handleLogin = async (username = 'Admin', password = "pg@1034") => {
     console.log("username", username);
     console.log("password", password);
-    const resp = await  login( {
+    const resp = await login({
       username,
-      password , 
+      password,
       licenseKey: 'M2M5ODZhZWI1YmVlNjQ3ZmZlNWYzZTNjZDczZDM3',
       signOnToken: '',
-    })
-    if(!resp?.token){
-      Cookies.set('token',resp?.token );
-       router.push('/home'); // Replace with your actual dashboard route
+    });
+
+    if (resp?.token) {
+      Cookies.set('token', resp.token);
+      // Replace the current URL state to avoid navigating back to login
+      router.replace('/home');
+    } else {
+      console.log("Login failed");
     }
 
-    console.log("resp",resp)
+    console.log("resp", resp);
   };
 
-  return <text> <Link href='/home'>go home</Link></text>;
+  return (
+    <div>
+      <Link href='/home'>404 not found, go home</Link>
+    </div>
+  );
 };
 
 export default Home;

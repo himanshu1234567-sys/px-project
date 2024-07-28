@@ -1,13 +1,8 @@
-// next.config.js
-module.exports = {
-    async redirects() {
-      return [
-        {
-          source: '/dashboard',
-          destination: '/',
-          permanent: true,
-        },
-      ];
-    },
-  };
+/** @type {import('next').NextConfig} */
+    
+const nextConfig = {
+  reactStrictMode: true,
   
+}
+    
+module.exports = nextConfig
